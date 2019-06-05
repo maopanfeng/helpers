@@ -107,7 +107,7 @@ class Collection implements ArrayAccess,Countable,JsonSerializable,IteratorAggre
         
         if ($recursive) {
             array_unshift($args, $this->items);
-            $this->items = call_user_func_array('Arr::mergeRecursive', $args);
+            $this->items = call_user_func_array('\mxhei\helpers\Arr::mergeRecursive', $args);
         } else {
             foreach($args as $items) {
                 foreach ($items as $key => $value) {
