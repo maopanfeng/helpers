@@ -1,0 +1,21 @@
+{
+    "name": "mxhei/helpers",
+    "description": "助手类",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "毛攀峰",
+            "email": "1052661052@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "mxhei\\helpers\\": "src/"
+        }
+    }
+}
