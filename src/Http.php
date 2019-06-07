@@ -40,7 +40,7 @@ class Http
      */
     public function __construct($options = [])
     {
-        $this->options = array_merge($this->options, $options);
+        $this->options += $options;
         static::$inst = $this;
     }
     
@@ -70,14 +70,20 @@ class Http
     
     public function send($url, $data = [], $method = 'POST', $options = [])
     {
+        $method = strtolower($method);
+        if ($data && ($method == 'get' || $method == 'head')) {
+            $url .= stripos($url, '?') !== false ? '&'.http_build_query($data) : '?'.http_build_query($data);
+        }
         $options[CURLOPT_URL] = $url;
         $options = $this->resolveOptions($options);
         $options = $this->resetRequestMethodOption($method, $data, $options);
-        Event::listen(static::EVENT_BEFORE_REQUEST, [&$data, $options]);
-        
-        $curl = curl_init();
-        $result = [];
-        Event::listen(static::EVENT_AFTER_REQUEST, [&$result, $data]);
+        Event::listen(static::EVENT_BEFORE_REQUEST, $options, $data);
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        $result = curl_exec($ch);
+        $errno = curl_errno($ch);
+        curl_close($ch);
+        Event::listen(static::EVENT_AFTER_REQUEST, $result, ['data'=>$data, 'error'=>$errno]);
         
         return $result;
     }
@@ -105,6 +111,13 @@ class Http
     
     public function resolveOptions($options = [])
     {
+        if (!empty($options[CURLOPT_HTTPHEADER])) {
+            $headers = $options[CURLOPT_HTTPHEADER];
+            $headers = array_merge($this->headers, $headers);
+            $options[CURLOPT_HTTPHEADER] = $headers;
+        }
+        $options = $this->options+$options;
+        
         return $options;
     }
     
