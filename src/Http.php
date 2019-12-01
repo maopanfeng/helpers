@@ -25,7 +25,7 @@ class Http
      * @var array $options
      */
     protected $options = [
-        CURLOPT_TIMEOUT => 10,
+        CURLOPT_TIMEOUT => 60,
         CURLOPT_HEADER => false,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_RETURNTRANSFER => true,
@@ -116,7 +116,7 @@ class Http
             $headers = array_merge($this->headers, $headers);
             $options[CURLOPT_HTTPHEADER] = $headers;
         }
-        $options = $this->options+$options;
+        $options = $options+$this->options;
         
         return $options;
     }
